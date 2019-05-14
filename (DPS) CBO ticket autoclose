@@ -1,0 +1,22 @@
+autoCloseIncidents();
+
+function autoCloseIncidents() {
+	var ps = gs.getProperty('x_dops_hr.cbo.autoclose.time');
+	var pn = parseInt(ps);
+	var queryTime = new GlideDateTime();
+	queryTime.addDaysUTC(-pn);
+	
+	if (pn > 0) {
+		var gr = new GlideRecord('x_dops_hr_cbo_ticket');
+		gr.addQuery('state', 6);
+		gr.addQuery('resolved_at', '<', queryTime);		
+		gr.query();
+		while(gr.next()) {
+			gr.state = 3;
+			gr.comments = 'Ticket automatically closed after ' + pn + ' days in the Resolved state.';
+			gr.active = false;
+			gr.closed_by = gr.resolved_by;
+			gr.update();
+		}
+	}
+}
