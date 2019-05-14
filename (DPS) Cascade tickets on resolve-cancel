@@ -1,0 +1,19 @@
+	var gr = new GlideRecord("x_dops_hr_cbo_ticket");
+	gr.addQuery("parent", current.sys_id);
+	gr.query();
+	while (gr.next()) {
+		gr.close_notes = current.getDisplayValue() + ': \n' + current.close_notes;
+		gr.close_code = current.close_code;
+		gr.resolved_at = current.resolved_at;
+		gr.resolved_by = current.resolved_by;
+		gr.state = current.state;
+		gr.update();
+	}
+	var count = gr.getRowCount();
+	if(count == 1){
+		gs.addInfoMessage('Child ticket has been ' + current.state.getDisplayValue());
+	}
+	if (count > 1){
+		gs.addInfoMessage(count + ' child tickets have been ' + current.state.getDisplayValue());
+	}
+	
